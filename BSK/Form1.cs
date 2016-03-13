@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace BSK
 {
-    public partial class Szyfrator : Form
+    public partial class Form1 : Form
     {
-        public Szyfrator()
+        public Form1()
         {
             InitializeComponent();
         }

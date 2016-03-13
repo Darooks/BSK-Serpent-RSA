@@ -1,5 +1,9 @@
 c:\users\karol\documents\visual studio 2013\Projects\BSK\BSK\bin\Debug\BSK.exe.config
 c:\users\karol\documents\visual studio 2013\Projects\BSK\BSK\obj\Debug\BSK.csprojResolveAssemblyReference.cache
-c:\users\karol\documents\visual studio 2013\Projects\BSK\BSK\obj\Debug\BSK.Szyfrator.resources
 c:\users\karol\documents\visual studio 2013\Projects\BSK\BSK\obj\Debug\BSK.Properties.Resources.resources
 c:\users\karol\documents\visual studio 2013\Projects\BSK\BSK\obj\Debug\BSK.csproj.GenerateResource.Cache
+c:\users\karol\documents\visual studio 2013\Projects\BSK\BSK\bin\Debug\BSK.exe
+c:\users\karol\documents\visual studio 2013\Projects\BSK\BSK\bin\Debug\BSK.pdb
+c:\users\karol\documents\visual studio 2013\Projects\BSK\BSK\obj\Debug\BSK.Form1.resources
+c:\users\karol\documents\visual studio 2013\Projects\BSK\BSK\obj\Debug\BSK.exe
+c:\users\karol\documents\visual studio 2013\Projects\BSK\BSK\obj\Debug\BSK.pdb
