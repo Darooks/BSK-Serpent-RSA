@@ -35,14 +35,14 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.e_status_lbl = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.e_key_lendth_cb = new System.Windows.Forms.ComboBox();
+            this.e_key_length_cb = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.e_password_tb = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.e_box_length_cb = new System.Windows.Forms.ComboBox();
-            this.e_mode_tb = new System.Windows.Forms.ComboBox();
+            this.e_mode_cb = new System.Windows.Forms.ComboBox();
             this.e_length_subbox_cb = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -122,14 +122,14 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.e_key_lendth_cb);
+            this.groupBox2.Controls.Add(this.e_key_length_cb);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Controls.Add(this.e_password_tb);
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.e_box_length_cb);
-            this.groupBox2.Controls.Add(this.e_mode_tb);
+            this.groupBox2.Controls.Add(this.e_mode_cb);
             this.groupBox2.Controls.Add(this.e_length_subbox_cb);
             this.groupBox2.Controls.Add(this.label6);
             this.groupBox2.Location = new System.Drawing.Point(52, 179);
@@ -139,18 +139,18 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Ustawienia";
             // 
-            // e_key_lendth_cb
+            // e_key_length_cb
             // 
-            this.e_key_lendth_cb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.e_key_lendth_cb.FormattingEnabled = true;
-            this.e_key_lendth_cb.Items.AddRange(new object[] {
+            this.e_key_length_cb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.e_key_length_cb.FormattingEnabled = true;
+            this.e_key_length_cb.Items.AddRange(new object[] {
             "128 bit",
             "192 bit",
             "256 bit"});
-            this.e_key_lendth_cb.Location = new System.Drawing.Point(124, 40);
-            this.e_key_lendth_cb.Name = "e_key_lendth_cb";
-            this.e_key_lendth_cb.Size = new System.Drawing.Size(78, 21);
-            this.e_key_lendth_cb.TabIndex = 7;
+            this.e_key_length_cb.Location = new System.Drawing.Point(124, 40);
+            this.e_key_length_cb.Name = "e_key_length_cb";
+            this.e_key_length_cb.Size = new System.Drawing.Size(78, 21);
+            this.e_key_length_cb.TabIndex = 7;
             // 
             // label3
             // 
@@ -200,25 +200,27 @@
             this.e_box_length_cb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.e_box_length_cb.FormattingEnabled = true;
             this.e_box_length_cb.Items.AddRange(new object[] {
-            "128 bit"});
+            "128 bit",
+            "192 bit",
+            "256 bit"});
             this.e_box_length_cb.Location = new System.Drawing.Point(124, 74);
             this.e_box_length_cb.Name = "e_box_length_cb";
             this.e_box_length_cb.Size = new System.Drawing.Size(78, 21);
             this.e_box_length_cb.TabIndex = 8;
             // 
-            // e_mode_tb
+            // e_mode_cb
             // 
-            this.e_mode_tb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.e_mode_tb.FormattingEnabled = true;
-            this.e_mode_tb.Items.AddRange(new object[] {
+            this.e_mode_cb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.e_mode_cb.FormattingEnabled = true;
+            this.e_mode_cb.Items.AddRange(new object[] {
             "ECB",
             "CBC",
             "CFB",
             "OFB"});
-            this.e_mode_tb.Location = new System.Drawing.Point(124, 107);
-            this.e_mode_tb.Name = "e_mode_tb";
-            this.e_mode_tb.Size = new System.Drawing.Size(78, 21);
-            this.e_mode_tb.TabIndex = 9;
+            this.e_mode_cb.Location = new System.Drawing.Point(124, 107);
+            this.e_mode_cb.Name = "e_mode_cb";
+            this.e_mode_cb.Size = new System.Drawing.Size(78, 21);
+            this.e_mode_cb.TabIndex = 9;
             // 
             // e_length_subbox_cb
             // 
@@ -467,9 +469,9 @@
         private System.Windows.Forms.TabPage SzyfrowanieTab;
         private System.Windows.Forms.TabPage OdszyfrowanieTab;
         private System.Windows.Forms.BindingSource bindingSource1;
-        private System.Windows.Forms.ComboBox e_mode_tb;
+        private System.Windows.Forms.ComboBox e_mode_cb;
         private System.Windows.Forms.ComboBox e_box_length_cb;
-        private System.Windows.Forms.ComboBox e_key_lendth_cb;
+        private System.Windows.Forms.ComboBox e_key_length_cb;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
@@ -498,6 +500,8 @@
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Label d_status_lbl;
+
+        EncodingProperties object_to_encode = new EncodingProperties();
     }
 }
 
