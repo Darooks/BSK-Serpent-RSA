@@ -500,6 +500,8 @@
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Label d_status_lbl;
+
+        EncodingProperties object_to_encode = new EncodingProperties();
     }
 }
 
