@@ -27,7 +27,7 @@ namespace BSK
 
         }
 
-        private void e_path_button_click (object sender, EventArgs e)
+        private void e_path_button_click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.FilterIndex = 1;
@@ -51,28 +51,42 @@ namespace BSK
                 e_length_subbox_cb.SelectedIndex = -1;
                 e_length_subbox_cb.Enabled = false;
             }
-            else            
-                e_length_subbox_cb.Enabled = true;           
+            else
+                e_length_subbox_cb.Enabled = true;
 
         }
 
         private void encode_button_click(object sender, EventArgs e)
         {
+            bool correct = true;
+
             String key_lenght = e_key_length_cb.Text;
-            object_to_encode.key_length = Int32.Parse(key_lenght.Substring(0, key_lenght.IndexOf(" ")));
+            if (key_lenght == "")
+                correct = false;
+            else
+                object_to_encode.key_length = Int32.Parse(key_lenght.Substring(0, key_lenght.IndexOf(" ")));
 
             String block_lenght = e_box_length_cb.Text;
-            object_to_encode.box_lenght = Int32.Parse(block_lenght.Substring(0, block_lenght.IndexOf(" ")));
+            if (block_lenght == "")
+                correct = false;
+            else
+                object_to_encode.box_lenght = Int32.Parse(block_lenght.Substring(0, block_lenght.IndexOf(" ")));
 
-            object_to_encode.mode = e_mode_cb.Text;
+            if (e_mode_cb.Text == "")
+                correct = false;
+            else
+                object_to_encode.mode = e_mode_cb.Text;
 
             String subbox_lenght = e_length_subbox_cb.Text;
-            object_to_encode.subbox_lenght = Int32.Parse(subbox_lenght.Substring(0, subbox_lenght.IndexOf(" ")));
+            if (subbox_lenght == "" && e_length_subbox_cb.Enabled == true)
+                correct = false;
+            else if (e_mode_cb.Text == "CBC" || e_mode_cb.Text == "ECB")
+                object_to_encode.subbox_lenght = Int32.Parse(subbox_lenght.Substring(0, subbox_lenght.IndexOf(" ")));
 
             object_to_encode.password = e_password_tb.Text;
 
-            //String choice = object_to_encode.key_lenght + "\n" + block_lenght + "\n" + mode + "\n" + subbox_lenght + "\n" + password; 
-            //MessageBox.Show(choice);
+            if (correct == false)
+                MessageBox.Show("Uzupelnij ustawienia!");      
 
         }
     }
