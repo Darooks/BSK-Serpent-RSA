@@ -25,10 +25,12 @@ namespace BSK
         public List<String> users_to_encode = new List<String>();
         public List<String> users_to_decode = new List<String>();
         DirectoryInfo public_keys_path = new DirectoryInfo(@"C:\Serpent\BSK\bin\Debug\Users\PublicKeys\");
+        bool activated = false;
 
         public Form1()
         {
             InitializeComponent();
+            load_comboboxes();
             load_users();
             load_users_to_list();
             encode_button.Click += encode_button_click;
@@ -42,6 +44,21 @@ namespace BSK
         private void Form1_Load(object sender, EventArgs e)
         {
             
+        }
+
+        private void load_comboboxes()
+        {
+            if (!activated)
+            {
+                e_box_length_cb.SelectedIndex = 0;
+                e_box_length_cb.Enabled = false;
+                e_key_length_cb.SelectedIndex = 0;
+                e_length_subbox_cb.SelectedIndex = 15;
+                e_length_subbox_cb.Enabled = false;
+                e_mode_cb.SelectedIndex = 0;
+                activated = true;
+                
+            }
         }
 
         private void load_users()
@@ -130,8 +147,8 @@ namespace BSK
         {
             if (e_mode_cb.Text == "ECB" || e_mode_cb.Text == "CBC")
             {
-                e_length_subbox_cb.SelectedIndex = -1;
                 e_length_subbox_cb.Enabled = false;
+                e_length_subbox_cb.SelectedIndex = 15;
             }
             else
                 e_length_subbox_cb.Enabled = true;
@@ -159,22 +176,19 @@ namespace BSK
                 object_to_encode.mode = e_mode_cb.Text;
 
             String subbox_lenght = e_length_subbox_cb.Text;
-            if (subbox_lenght == "" && e_length_subbox_cb.Enabled == true)
-                correct = false;
-            else if (e_mode_cb.Text == "CFB" || e_mode_cb.Text == "OFB")
-                object_to_encode.subbox_lenght = Int32.Parse(subbox_lenght.Substring(0, subbox_lenght.IndexOf(" ")));
 
-            
+            object_to_encode.subbox_lenght = Int32.Parse(subbox_lenght.Substring(0, subbox_lenght.IndexOf(" ")));
 
-            byte[] key = { 1, 2, 3, 4, 5 };
+
+            e_status_lbl.Text = "Przygotowywanie do szyfrowania";
 
             if (correct == false)
                 MessageBox.Show("Uzupelnij ustawienia!");
             else
-                encrypt();
+                encrypt(true);
         }
 
-        private void encrypt()
+        private void encrypt(bool encrypt)
         {
             String path = Path.GetDirectoryName(object_to_encode.path);
             String name_of_file = Path.GetFileName(object_to_encode.path);
@@ -182,24 +196,169 @@ namespace BSK
             name_of_file = "Zaszyfrowany" + words[0];
             path += @"\\" + name_of_file;
 
-            XDocument myXML = new XDocument(
-                    new XDeclaration("1.0", "utf-8", "yes"),
-                    new XElement("EncryptedFileHeader",
-                    new XElement("Algorithm", "SERPENT"),
-                    new XElement("CipherMode", object_to_encode.mode),
-                    new XElement("SubboxLength", object_to_encode.subbox_lenght),
-                    new XElement("KeyLength", object_to_encode.key_length)
-                    //new XElement("EncryptedKey", Convert.ToBase64String(encryptedKey)),
-                    //new XElement("IV", Convert.ToBase64String(iv))
-                )
-            );
-            using (StreamWriter sw = new StreamWriter(path, false, Encoding.ASCII))
+            //XDocument myXML = new XDocument(
+            //        new XDeclaration("1.0", "utf-8", "yes"),
+            //        new XElement("EncryptedFileHeader",
+            //        new XElement("Algorithm", "SERPENT"),
+            //        new XElement("CipherMode", object_to_encode.mode),
+            //        new XElement("SubboxLength", object_to_encode.subbox_lenght),
+            //        new XElement("KeyLength", object_to_encode.key_length)
+            //        //new XElement("EncryptedKey", Convert.ToBase64String(encryptedKey)),
+            //        //new XElement("IV", Convert.ToBase64String(iv))
+            //    )
+            //);
+            
+            
+            //using (StreamWriter sw = new StreamWriter(path, false, Encoding.ASCII))
+            //{
+            //    myXML.Save(sw);
+            //    sw.WriteLine();
+            //}
+            //###################################################################################
+            
+
+            if (!File.Exists(object_to_encode.path))
             {
-                myXML.Save(sw);
-                sw.WriteLine();
+                MessageBox.Show("Podano nieistniejący plik źródłowy.");
+                return;
             }
 
 
+            block_controllers();
+
+            IAlgorithm alg;
+            e_status_lbl.Text = "Szyfrowanie";
+
+            //if (encrypt)
+            //{
+            alg = encryptFile(object_to_encode.path, path, object_to_encode.mode, object_to_encode.subbox_lenght, object_to_encode.key_length, object_to_encode.password);
+            //}
+
+            Int64 length = alg.getSrcLength();
+            Int64 step = System.Convert.ToInt64(Math.Ceiling(length / (double)100));
+            Int64 countBytes = 0;
+            Int64 bytes = 1;
+
+            while (bytes > 0)
+            {
+                // "unit work" szyfrowanie fragmentu pliku
+                bytes = alg.encrypt(step);
+                countBytes += bytes;
+
+                int progress = (int)(countBytes * 100 / length);
+            }
+            alg.Dispose();
+
+            e_status_lbl.Text = "Szyfrowanie zakonczone!!!";
+            restore_controllers();
+        }
+
+        private void block_controllers()
+        {
+            e_add_user.Enabled = false;
+            e_delete_user.Enabled = false;
+            e_key_length_cb.Enabled = false;
+            e_length_subbox_cb.Enabled = false;
+            e_mode_cb.Enabled = false;
+            e_path_button.Enabled = false;
+        }
+
+        private void restore_controllers()
+        {
+            e_add_user.Enabled = true;
+            e_delete_user.Enabled = true;
+            e_key_length_cb.Enabled = true;
+            e_length_subbox_cb.Enabled = true;
+            e_mode_cb.Enabled = true;
+            e_path_button.Enabled = true;
+        }
+
+        private IAlgorithm encryptFile(String src, String dst, String cipher_mode, int segment, int session_key_size, String password) // dodac uzytnikow
+        {
+            // wykonanie algorytmu
+            //  utworzenie obiektu klasy algorithm (IAlgorithm)
+            //  wywołanie metody encrypt z odpowiednimi parametrami
+            //  w tym obsługa paska postepu i przerwania operacji
+            IAlgorithm alg;
+
+            var key = Serpent.generateKey(session_key_size);
+
+            var iv = Serpent.generateIV();
+
+            // zaszyfrowanie klucza sesyjnego algorytmem Serpent/ECB hasłem `password`
+            var sessionKeyAlg = getSessionKeyAlg(true, password);
+            var encryptedKey = sessionKeyAlg.encryptInMemory(key.GetKey());
+
+            XElement my_usersXML = new XElement("users");
+
+            foreach (var user in users_to_encode)
+            {
+                my_usersXML.Add(new XElement("user", user));
+            }
+
+            // utworzenie nagłówka
+            XDocument miXML = new XDocument(
+                new XDeclaration("1.0", "utf-8", "yes"),
+                new XElement("EncryptedFileHeader",
+                    new XElement("Algorithm", "SERPENT"),
+                    new XElement("CipherMode", cipher_mode),
+                    new XElement("SegmentSize", segment),
+                    new XElement("KeySize", session_key_size),
+                    new XElement("EncryptedKey", Convert.ToBase64String(encryptedKey)),
+                    new XElement("IV", Convert.ToBase64String(iv)),
+                    my_usersXML
+                )
+            );          
+            
+
+            using (StreamWriter sw = new StreamWriter(dst, false, Encoding.ASCII))
+            {
+                miXML.Save(sw);
+                sw.WriteLine();
+            }
+            long xmlSize = new FileInfo(dst).Length;
+
+            // zapisanie nagłówka
+            var headerOffset = xmlSize;
+
+            // szyfrowanie
+            alg = new Serpent(key, iv, true);
+            alg.init(src, dst, cipher_mode, segment, 0, headerOffset);
+
+            return alg;
+        }
+
+        private IAlgorithm getSessionKeyAlg(bool encryption, string password)
+        {
+            var SKkey = Serpent.generateKeyFromBytes(computeHash(password));
+            var SKiv = Serpent.generateIV(true);
+            IAlgorithm sessionKeyAlg = new Serpent(SKkey, SKiv, encryption);
+            sessionKeyAlg.init(null, null, "ECB", 128);
+
+            return sessionKeyAlg;
+        }
+
+        private byte[] computeHash(String data)
+        {
+            using (var alg = SHA256.Create())
+            {
+                return alg.ComputeHash(GetBytes(data));
+            }
+        }
+
+        static byte[] GetBytes(String str)
+        {
+            byte[] bytes = new byte[str.Length * sizeof(char)];
+            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+            return bytes;
+        }
+
+        private void main_menu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
         }
     }
+
+   
+
 }

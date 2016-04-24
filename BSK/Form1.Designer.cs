@@ -177,7 +177,7 @@
             "128 bit",
             "192 bit",
             "256 bit"});
-            this.e_key_length_cb.Location = new System.Drawing.Point(124, 51);
+            this.e_key_length_cb.Location = new System.Drawing.Point(124, 78);
             this.e_key_length_cb.Name = "e_key_length_cb";
             this.e_key_length_cb.Size = new System.Drawing.Size(50, 21);
             this.e_key_length_cb.TabIndex = 7;
@@ -185,7 +185,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(18, 54);
+            this.label3.Location = new System.Drawing.Point(18, 81);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(80, 13);
             this.label3.TabIndex = 4;
@@ -194,7 +194,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(18, 81);
+            this.label4.Location = new System.Drawing.Point(18, 108);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(75, 13);
             this.label4.TabIndex = 5;
@@ -203,7 +203,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(20, 108);
+            this.label5.Location = new System.Drawing.Point(20, 54);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(28, 13);
             this.label5.TabIndex = 6;
@@ -217,7 +217,7 @@
             "128 bit",
             "192 bit",
             "256 bit"});
-            this.e_box_length_cb.Location = new System.Drawing.Point(124, 78);
+            this.e_box_length_cb.Location = new System.Drawing.Point(124, 105);
             this.e_box_length_cb.Name = "e_box_length_cb";
             this.e_box_length_cb.Size = new System.Drawing.Size(50, 21);
             this.e_box_length_cb.TabIndex = 8;
@@ -231,7 +231,7 @@
             "CBC",
             "CFB",
             "OFB"});
-            this.e_mode_cb.Location = new System.Drawing.Point(124, 105);
+            this.e_mode_cb.Location = new System.Drawing.Point(124, 51);
             this.e_mode_cb.Name = "e_mode_cb";
             this.e_mode_cb.Size = new System.Drawing.Size(50, 21);
             this.e_mode_cb.TabIndex = 9;
@@ -241,12 +241,22 @@
             this.e_length_subbox_cb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.e_length_subbox_cb.FormattingEnabled = true;
             this.e_length_subbox_cb.Items.AddRange(new object[] {
-            "2 bit",
-            "4 bit",
             "8 bit",
             "16 bit",
+            "24 bit",
             "32 bit",
-            "64 bit"});
+            "40 bit",
+            "48 bit",
+            "56 bit",
+            "64 bit",
+            "72 bit",
+            "80 bit",
+            "88 bit",
+            "96 bit",
+            "104 bit",
+            "112 bit",
+            "120 bit",
+            "128 bit"});
             this.e_length_subbox_cb.Location = new System.Drawing.Point(124, 132);
             this.e_length_subbox_cb.Name = "e_length_subbox_cb";
             this.e_length_subbox_cb.Size = new System.Drawing.Size(50, 21);
@@ -433,6 +443,7 @@
             this.main_menu.Size = new System.Drawing.Size(575, 24);
             this.main_menu.TabIndex = 1;
             this.main_menu.Text = "menuStrip1";
+            this.main_menu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.main_menu_ItemClicked);
             // 
             // odbiorcyToolStripMenuItem
             // 
