@@ -25,3 +25,6 @@ C:\Serpent\BSK\obj\Debug\BSK.csprojResolveAssemblyReference.cache
 C:\Serpent\BSK\obj\Debug\BSK.Form1.resources
 C:\Serpent\BSK\obj\Debug\BSK.Properties.Resources.resources
 C:\Serpent\BSK\obj\Debug\BSK.csproj.GenerateResource.Cache
+C:\Serpent\BSK\bin\Debug\BouncyCastle.Crypto.dll
+C:\Serpent\BSK\obj\Debug\BSK.AddUserForm.resources
+C:\Serpent\BSK\obj\Debug\BSK.AddAuthorizedForm.resources
