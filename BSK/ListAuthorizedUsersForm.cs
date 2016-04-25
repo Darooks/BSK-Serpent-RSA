@@ -12,7 +12,7 @@ using System.IO;
 
 namespace BSK
 {
-    class AddAuthorizedForm : Form
+    class ListAuthorizedUsersForm : Form
     {
         public List<String> all_users = new List<String>();
         public List<String> users_on_list = new List<String>();
@@ -22,7 +22,7 @@ namespace BSK
         public String user;
         DirectoryInfo public_keys_path = new DirectoryInfo(@"C:\Serpent\BSK\bin\Debug\Users\PublicKeys\");
 
-        public AddAuthorizedForm(List<String> list_from_form)
+        public ListAuthorizedUsersForm(List<String> list_from_form)
         {
             FileInfo[] Files = public_keys_path.GetFiles(); //Getting Text files
 

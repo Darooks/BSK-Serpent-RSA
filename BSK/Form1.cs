@@ -23,6 +23,7 @@ namespace BSK
     public partial class Form1 : Form
     {
         public List<String> users_to_encode = new List<String>();
+        public List<String> encrypted_keys = new List<String>();
         public List<String> users_to_decode = new List<String>();
         DirectoryInfo public_keys_path = new DirectoryInfo(@"C:\Serpent\BSK\bin\Debug\Users\PublicKeys\");
         bool activated = false;
@@ -104,7 +105,7 @@ namespace BSK
         private void add_authorized_user(object sender, EventArgs e)
         {
 
-            AddAuthorizedForm add_authorized_form = new AddAuthorizedForm(users_to_encode);
+            ListAuthorizedUsersForm add_authorized_form = new ListAuthorizedUsersForm(users_to_encode);
             add_authorized_form.ShowDialog();
             add_authorized_form.BringToFront();
             add_authorized_form.Focus();
@@ -280,22 +281,36 @@ namespace BSK
             //  wywołanie metody encrypt z odpowiednimi parametrami
             //  w tym obsługa paska postepu i przerwania operacji
             IAlgorithm alg;
-
+            //Dodaje tutaj naglowek userow, pomysl nad rozbiciem tego na funkcje############################################################
             var key = Serpent.generateKey(session_key_size);
 
             var iv = Serpent.generateIV();
 
-            // zaszyfrowanie klucza sesyjnego algorytmem Serpent/ECB hasłem `password`
-            var sessionKeyAlg = getSessionKeyAlg(true, password);
-            var encryptedKey = sessionKeyAlg.encryptInMemory(key.GetKey());
-
-            XElement my_usersXML = new XElement("users");
+            dynamic sessionKeyAlg;
+            dynamic encryptedKey;
+            // zaszyfrowanie klucza sesyjnego algorytmem Serpent/ECB hasłem `password` // usun to, nie mozna haslem szyfrowac tylko kluczem!
+            //sessionKeyAlg = getSessionKeyAlg(true, password);           // <--- podajesz password // i cisniesz dla usera
+            //encryptedKey = sessionKeyAlg.encryptInMemory(key.GetKey()); //
 
             foreach (var user in users_to_encode)
             {
-                my_usersXML.Add(new XElement("user", user));
-            }
+                using (StreamReader sr = new StreamReader(public_keys_path.ToString() + user))
+                {
+                    sessionKeyAlg = getSessionKeyAlg(true, sr.ReadLine());
+                    encryptedKey = sessionKeyAlg.encryptInMemory(key.GetKey());
+                    encrypted_keys.Add(Convert.ToBase64String(encryptedKey));
+                }
+            }            
 
+            XElement usersXML = new XElement("Users");
+
+            for (int i = 0; i < users_to_encode.Count(); i++)
+            {
+                usersXML.Add(new XElement("User",
+                    new XElement("Name", users_to_encode[i]),
+                    new XElement("EncryptedKey", encrypted_keys[i])));
+            }          
+            //#################################################################################################################################
             // utworzenie nagłówka
             XDocument miXML = new XDocument(
                 new XDeclaration("1.0", "utf-8", "yes"),
@@ -304,9 +319,9 @@ namespace BSK
                     new XElement("CipherMode", cipher_mode),
                     new XElement("SegmentSize", segment),
                     new XElement("KeySize", session_key_size),
-                    new XElement("EncryptedKey", Convert.ToBase64String(encryptedKey)),
+                    //new XElement("EncryptedKey", Convert.ToBase64String(encryptedKey)),
                     new XElement("IV", Convert.ToBase64String(iv)),
-                    my_usersXML
+                    usersXML
                 )
             );          
             
@@ -357,8 +372,6 @@ namespace BSK
         {
 
         }
-    }
-
-   
+    }   
 
 }

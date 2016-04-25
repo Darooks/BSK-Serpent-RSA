@@ -145,6 +145,7 @@ namespace BSK
             var r = new RsaKeyPairGenerator();
             r.Init(new KeyGenerationParameters(new SecureRandom(), LENGHT_OF_KEY));
             var keys = r.GenerateKeyPair();
+            
 
             TextWriter textWriter = new StringWriter();
             PemWriter pemWriter = new PemWriter(textWriter);
@@ -163,13 +164,18 @@ namespace BSK
             private_key = delete_last_and_first(private_key.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None));
             //name += ".txt";
 
+            //szyfruje klucz prywatny za pomoca hasla, i skrotu funkcji SHA_256
+            var private_key_to_SHA = computeHash(private_key);
+            var encrypted_private_keyALG = getSessionKeyAlg(true, password);
+            var encrypted_private_key = encrypted_private_keyALG.encryptInMemory(private_key_to_SHA);
+
             using (StreamWriter sw = new StreamWriter(public_keys_path + name, true))
             {
                 sw.Write(public_key);
             }
             using (StreamWriter sw = new StreamWriter(private_keys_path + name, true))
             {
-                sw.Write(private_key);
+                sw.Write(Convert.ToBase64String(encrypted_private_key));
             }
         }
 
@@ -182,6 +188,31 @@ namespace BSK
                 new_str += str[i];
             
             return new_str;
+        }
+
+        private IAlgorithm getSessionKeyAlg(bool encryption, string password)
+        {
+            var SKkey = Serpent.generateKeyFromBytes(computeHash(password));
+            var SKiv = Serpent.generateIV(true);
+            IAlgorithm sessionKeyAlg = new Serpent(SKkey, SKiv, encryption);
+            sessionKeyAlg.init(null, null, "ECB", 128);
+
+            return sessionKeyAlg;
+        }
+
+        private byte[] computeHash(String data)
+        {
+            using (var alg = SHA256.Create())
+            {
+                return alg.ComputeHash(GetBytes(data));
+            }
+        }
+
+        static byte[] GetBytes(String str)
+        {
+            byte[] bytes = new byte[str.Length * sizeof(char)];
+            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+            return bytes;
         }
     }
 }
