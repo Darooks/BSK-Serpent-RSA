@@ -142,62 +142,41 @@ namespace BSK
         //TODO Zaszyfrowac klucz publiczny i prywatny za pomoca hasla!!!
         private void create_user(String name, String password)
         {
-            var r = new RsaKeyPairGenerator();
-            r.Init(new KeyGenerationParameters(new SecureRandom(), LENGHT_OF_KEY));
-            var keys = r.GenerateKeyPair();
-            
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(LENGHT_OF_KEY);
+            var private_key = rsa.ToXmlString(true);
+            var public_key = rsa.ToXmlString(false); // RSA.FromXmlString(publicKey);
 
-            TextWriter textWriter = new StringWriter();
-            PemWriter pemWriter = new PemWriter(textWriter);
-            pemWriter.WriteObject(keys.Private);
-            pemWriter.Writer.Flush();
-            String private_key = textWriter.ToString();
+            var SHA = SHA256.Create();
+            byte[] hashed_password = SHA.ComputeHash(GetBytes(password));
+            KeyParameter session_key = new KeyParameter(hashed_password);
 
-            TextWriter textWriter2 = new StringWriter();
-            PemWriter pemWriter2 = new PemWriter(textWriter2);
-            pemWriter2.WriteObject(keys.Public);
-            pemWriter2.Writer.Flush();
-
-            String public_key = textWriter2.ToString();
-
-            public_key = delete_last_and_first(public_key.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None));
-            private_key = delete_last_and_first(private_key.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None));
-            //name += ".txt";
-
-            //szyfruje klucz prywatny za pomoca hasla, i skrotu funkcji SHA_256
-            var private_key_to_SHA = computeHash(private_key);
-            var encrypted_private_keyALG = getSessionKeyAlg(true, password);
-            var encrypted_private_key = encrypted_private_keyALG.encryptInMemory(private_key_to_SHA);
+            //szyfruje klucz prywatny za pomoca hasla, i skrotu funkcji SHA_256            
 
             using (StreamWriter sw = new StreamWriter(public_keys_path + name, true))
             {
                 sw.Write(public_key);
+                sw.Flush();
+                sw.Close();
             }
-            using (StreamWriter sw = new StreamWriter(private_keys_path + name, true))
+            using (StreamWriter sw = new StreamWriter(private_keys_path + name + "tmp", true))
             {
-                sw.Write(Convert.ToBase64String(encrypted_private_key));
+                sw.Write(private_key);
+                sw.Flush();
+                sw.Close();
             }
-        }
-
-        private String delete_last_and_first(String[] str)
-        {
-            int size = str.Length;
-            String new_str = "";
-
-            for (int i = 1; i < size - 2; i++)            
-                new_str += str[i];
             
-            return new_str;
-        }
+            IAlgorithm alg = encryptFile(private_keys_path + name + "tmp", private_keys_path + name, "ECB", 128, 128, Convert.ToBase64String(hashed_password), session_key, hashed_password);
+            Int64 length = alg.getSrcLength();
+            Int64 step = System.Convert.ToInt64(Math.Ceiling(length / (double)100));
+            Int64 bytes = 1;
 
-        private IAlgorithm getSessionKeyAlg(bool encryption, string password)
-        {
-            var SKkey = Serpent.generateKeyFromBytes(computeHash(password));
-            var SKiv = Serpent.generateIV(true);
-            IAlgorithm sessionKeyAlg = new Serpent(SKkey, SKiv, encryption);
-            sessionKeyAlg.init(null, null, "ECB", 128);
-
-            return sessionKeyAlg;
+            while (bytes > 0)
+            {
+                // "unit work" szyfrowanie fragmentu pliku
+                bytes = alg.encrypt(step);
+            }
+            alg.Dispose();
+            File.Delete(private_keys_path + name + "tmp");
         }
 
         private byte[] computeHash(String data)
@@ -213,6 +192,21 @@ namespace BSK
             byte[] bytes = new byte[str.Length * sizeof(char)];
             System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
             return bytes;
+        }
+
+        public IAlgorithm encryptFile(String src, String dst, String cipher_mode, int segment, int session_key_size, String password, KeyParameter key, byte[] iv) // dodac uzytnikow
+        {
+            IAlgorithm alg;
+
+            //var key2 = Serpent.generateKey(session_key_size);
+
+            //var iv2 = Serpent.generateIV();
+
+            // szyfrowanie
+            alg = new Serpent(key, iv, true);
+            alg.init(src, dst, cipher_mode, segment, 0);
+
+            return alg;
         }
     }
 }

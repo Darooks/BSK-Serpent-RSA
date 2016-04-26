@@ -167,9 +167,6 @@ namespace BSK
 
                 if (readBytes > 0)
                 {
-                    //var tmp = temp.GetString(b);
-                    //System.Console.WriteLine("\r\n[" + readBytes + "]\r\n" + tmp);
-
                     // compute padding                    
                     paddingSize = mSegmentSize - (readBytes % mSegmentSize);
 

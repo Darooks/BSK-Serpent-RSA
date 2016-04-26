@@ -195,28 +195,7 @@ namespace BSK
             String name_of_file = Path.GetFileName(object_to_encode.path);
             String[] words = name_of_file.Split('.');
             name_of_file = "Zaszyfrowany" + words[0];
-            path += @"\\" + name_of_file;
-
-            //XDocument myXML = new XDocument(
-            //        new XDeclaration("1.0", "utf-8", "yes"),
-            //        new XElement("EncryptedFileHeader",
-            //        new XElement("Algorithm", "SERPENT"),
-            //        new XElement("CipherMode", object_to_encode.mode),
-            //        new XElement("SubboxLength", object_to_encode.subbox_lenght),
-            //        new XElement("KeyLength", object_to_encode.key_length)
-            //        //new XElement("EncryptedKey", Convert.ToBase64String(encryptedKey)),
-            //        //new XElement("IV", Convert.ToBase64String(iv))
-            //    )
-            //);
-            
-            
-            //using (StreamWriter sw = new StreamWriter(path, false, Encoding.ASCII))
-            //{
-            //    myXML.Save(sw);
-            //    sw.WriteLine();
-            //}
-            //###################################################################################
-            
+            path += @"\\" + name_of_file;            
 
             if (!File.Exists(object_to_encode.path))
             {
@@ -244,9 +223,6 @@ namespace BSK
             {
                 // "unit work" szyfrowanie fragmentu pliku
                 bytes = alg.encrypt(step);
-                countBytes += bytes;
-
-                int progress = (int)(countBytes * 100 / length);
             }
             alg.Dispose();
 
@@ -282,12 +258,11 @@ namespace BSK
             //  w tym obsługa paska postepu i przerwania operacji
             IAlgorithm alg;
             //Dodaje tutaj naglowek userow, pomysl nad rozbiciem tego na funkcje############################################################
-            var key = Serpent.generateKey(session_key_size);
+            
+            var session_key = Serpent.generateKey(session_key_size);
 
             var iv = Serpent.generateIV();
-
-            dynamic sessionKeyAlg;
-            dynamic encryptedKey;
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();   
             // zaszyfrowanie klucza sesyjnego algorytmem Serpent/ECB hasłem `password` // usun to, nie mozna haslem szyfrowac tylko kluczem!
             //sessionKeyAlg = getSessionKeyAlg(true, password);           // <--- podajesz password // i cisniesz dla usera
             //encryptedKey = sessionKeyAlg.encryptInMemory(key.GetKey()); //
@@ -296,10 +271,21 @@ namespace BSK
             {
                 using (StreamReader sr = new StreamReader(public_keys_path.ToString() + user))
                 {
-                    sessionKeyAlg = getSessionKeyAlg(true, sr.ReadLine());
-                    encryptedKey = sessionKeyAlg.encryptInMemory(key.GetKey());
-                    encrypted_keys.Add(Convert.ToBase64String(encryptedKey));
+                    var public_key = sr.ReadToEnd();
+                    rsa.FromXmlString(public_key);
+                    var encrypted_key = rsa.Encrypt(session_key.GetKey(), false);
+                    
+                    encrypted_keys.Add(Convert.ToBase64String(encrypted_key));
                 }
+                
+                //using (BinaryReader br = new BinaryReader(new FileStream(public_keys_path.ToString() + user, FileMode.Open, FileAccess.Read)))
+                //{
+                //    long num_of_bytes = new FileInfo(public_keys_path.ToString() + user).Length;
+                //    int num = (int)num_of_bytes;
+                //    sessionKeyAlg = getSessionKeyAlg(true, br.ReadBytes(num).ToString());
+                //    encryptedKey = sessionKeyAlg.encryptInMemory(key.GetKey());
+                //    encrypted_keys.Add(Convert.ToBase64String(encryptedKey));
+                //}
             }            
 
             XElement usersXML = new XElement("Users");
@@ -319,7 +305,6 @@ namespace BSK
                     new XElement("CipherMode", cipher_mode),
                     new XElement("SegmentSize", segment),
                     new XElement("KeySize", session_key_size),
-                    //new XElement("EncryptedKey", Convert.ToBase64String(encryptedKey)),
                     new XElement("IV", Convert.ToBase64String(iv)),
                     usersXML
                 )
@@ -337,7 +322,7 @@ namespace BSK
             var headerOffset = xmlSize;
 
             // szyfrowanie
-            alg = new Serpent(key, iv, true);
+            alg = new Serpent(session_key, iv, true);
             alg.init(src, dst, cipher_mode, segment, 0, headerOffset);
 
             return alg;
