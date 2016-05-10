@@ -36,7 +36,8 @@ namespace BSK
             load_users_to_list();
             encode_button.Click += encode_button_click;
             e_mode_cb.SelectionChangeCommitted += e_change_restriction_mode;
-            e_path_button.Click += e_path_button_click;
+            e_src_button.Click += e_path_button_click;
+            e_dst_button.Click += e_path_button_click2;
             e_add_user.Click += add_authorized_user;
             e_delete_user.Click += delete_user;
             dodajOdbiorceToolStripMenuItem.Click += add_user_from_menu;
@@ -139,8 +140,32 @@ namespace BSK
             {
                 directoryPath = Path.GetFullPath(openFileDialog.FileName);
                 object_to_encode.path = directoryPath;
-                path_tb.Text = directoryPath;
+                e_src_tb.Text = directoryPath;
             }
+
+        }
+
+        private void e_path_button_click2(object sender, EventArgs e)
+        {
+
+            SaveFileDialog openFileDialog = new SaveFileDialog();
+
+            dynamic directoryPath;
+
+            DialogResult r = openFileDialog.ShowDialog();
+            if (DialogResult.OK == r)
+            {
+                e_dst_tb.Text = openFileDialog.FileName;
+            }
+
+            //if (DialogResult.OK == openFileDialog)
+            //{
+            //directoryPath = Path.GetFullPath(openFileDialog.FileName);
+            //directoryPath = Path.GetDirectoryName(openFileDialog.FileName);
+
+            //textBox_dest.Text = openFileDialog.FileName;
+
+            //}
 
         }
 
@@ -211,7 +236,7 @@ namespace BSK
 
             //if (encrypt)
             //{
-            alg = encryptFile(object_to_encode.path, path, object_to_encode.mode, object_to_encode.subbox_lenght, object_to_encode.key_length, object_to_encode.password);
+            alg = encryptFile(object_to_encode.path, e_dst_tb.Text, object_to_encode.mode, object_to_encode.subbox_lenght, object_to_encode.key_length, object_to_encode.password);
             //}
 
             Int64 length = alg.getSrcLength();
@@ -237,7 +262,7 @@ namespace BSK
             e_key_length_cb.Enabled = false;
             e_length_subbox_cb.Enabled = false;
             e_mode_cb.Enabled = false;
-            e_path_button.Enabled = false;
+            e_src_button.Enabled = false;
         }
 
         private void restore_controllers()
@@ -247,7 +272,7 @@ namespace BSK
             e_key_length_cb.Enabled = true;
             e_length_subbox_cb.Enabled = true;
             e_mode_cb.Enabled = true;
-            e_path_button.Enabled = true;
+            e_src_button.Enabled = true;
         }
 
         private IAlgorithm encryptFile(String src, String dst, String cipher_mode, int segment, int session_key_size, String password) // dodac uzytnikow

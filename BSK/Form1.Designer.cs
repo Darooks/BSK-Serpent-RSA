@@ -47,8 +47,11 @@
             this.e_length_subbox_cb = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.e_path_button = new System.Windows.Forms.Button();
-            this.path_tb = new System.Windows.Forms.TextBox();
+            this.e_dst_button = new System.Windows.Forms.Button();
+            this.e_dst_tb = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.e_src_button = new System.Windows.Forms.Button();
+            this.e_src_tb = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.encode_button = new System.Windows.Forms.Button();
             this.OdszyfrowanieTab = new System.Windows.Forms.TabPage();
@@ -60,13 +63,16 @@
             this.d_password_tb = new System.Windows.Forms.TextBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.d_path_tb = new System.Windows.Forms.TextBox();
-            this.d_path_button = new System.Windows.Forms.Button();
+            this.d_src_tb = new System.Windows.Forms.TextBox();
+            this.d_src_button = new System.Windows.Forms.Button();
             this.decode_button = new System.Windows.Forms.Button();
             this.main_menu = new System.Windows.Forms.MenuStrip();
             this.odbiorcyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dodajOdbiorceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.label7 = new System.Windows.Forms.Label();
+            this.d_dst_tb = new System.Windows.Forms.TextBox();
+            this.d_dst_button = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.SzyfrowanieTab.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -273,8 +279,11 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.e_path_button);
-            this.groupBox1.Controls.Add(this.path_tb);
+            this.groupBox1.Controls.Add(this.e_dst_button);
+            this.groupBox1.Controls.Add(this.e_dst_tb);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.e_src_button);
+            this.groupBox1.Controls.Add(this.e_src_tb);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(47, 28);
             this.groupBox1.Name = "groupBox1";
@@ -283,27 +292,53 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Plik wejsciowy";
             // 
-            // e_path_button
+            // e_dst_button
             // 
-            this.e_path_button.Location = new System.Drawing.Point(354, 53);
-            this.e_path_button.Name = "e_path_button";
-            this.e_path_button.Size = new System.Drawing.Size(75, 23);
-            this.e_path_button.TabIndex = 2;
-            this.e_path_button.Text = "Wybierz plik";
-            this.e_path_button.UseVisualStyleBackColor = true;
+            this.e_dst_button.Location = new System.Drawing.Point(354, 69);
+            this.e_dst_button.Name = "e_dst_button";
+            this.e_dst_button.Size = new System.Drawing.Size(75, 23);
+            this.e_dst_button.TabIndex = 5;
+            this.e_dst_button.Text = "Wybierz plik";
+            this.e_dst_button.UseVisualStyleBackColor = true;
             // 
-            // path_tb
+            // e_dst_tb
             // 
-            this.path_tb.Location = new System.Drawing.Point(135, 55);
-            this.path_tb.Name = "path_tb";
-            this.path_tb.Size = new System.Drawing.Size(184, 20);
-            this.path_tb.TabIndex = 1;
-            this.path_tb.Text = "Wybierz plik";
+            this.e_dst_tb.Location = new System.Drawing.Point(135, 71);
+            this.e_dst_tb.Name = "e_dst_tb";
+            this.e_dst_tb.Size = new System.Drawing.Size(184, 20);
+            this.e_dst_tb.TabIndex = 4;
+            this.e_dst_tb.Text = "Wybierz plik";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(25, 74);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(77, 13);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Plik wyjsciowy:";
+            // 
+            // e_src_button
+            // 
+            this.e_src_button.Location = new System.Drawing.Point(354, 33);
+            this.e_src_button.Name = "e_src_button";
+            this.e_src_button.Size = new System.Drawing.Size(75, 23);
+            this.e_src_button.TabIndex = 2;
+            this.e_src_button.Text = "Wybierz plik";
+            this.e_src_button.UseVisualStyleBackColor = true;
+            // 
+            // e_src_tb
+            // 
+            this.e_src_tb.Location = new System.Drawing.Point(135, 35);
+            this.e_src_tb.Name = "e_src_tb";
+            this.e_src_tb.Size = new System.Drawing.Size(184, 20);
+            this.e_src_tb.TabIndex = 1;
+            this.e_src_tb.Text = "Wybierz plik";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(25, 58);
+            this.label1.Location = new System.Drawing.Point(25, 38);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(78, 13);
             this.label1.TabIndex = 0;
@@ -356,7 +391,7 @@
             this.groupBox5.Controls.Add(this.label9);
             this.groupBox5.Controls.Add(this.d_users_list);
             this.groupBox5.Controls.Add(this.d_password_tb);
-            this.groupBox5.Location = new System.Drawing.Point(27, 160);
+            this.groupBox5.Location = new System.Drawing.Point(27, 175);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(485, 161);
             this.groupBox5.TabIndex = 7;
@@ -389,12 +424,15 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.d_dst_button);
+            this.groupBox4.Controls.Add(this.d_dst_tb);
+            this.groupBox4.Controls.Add(this.label7);
             this.groupBox4.Controls.Add(this.label8);
-            this.groupBox4.Controls.Add(this.d_path_tb);
-            this.groupBox4.Controls.Add(this.d_path_button);
+            this.groupBox4.Controls.Add(this.d_src_tb);
+            this.groupBox4.Controls.Add(this.d_src_button);
             this.groupBox4.Location = new System.Drawing.Point(27, 30);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(485, 100);
+            this.groupBox4.Size = new System.Drawing.Size(485, 121);
             this.groupBox4.TabIndex = 6;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Plik wejsciowy";
@@ -402,28 +440,28 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(29, 45);
+            this.label8.Location = new System.Drawing.Point(29, 36);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(78, 13);
             this.label8.TabIndex = 0;
             this.label8.Text = "Plik wejsciowy:";
             // 
-            // d_path_tb
+            // d_src_tb
             // 
-            this.d_path_tb.Location = new System.Drawing.Point(114, 45);
-            this.d_path_tb.Name = "d_path_tb";
-            this.d_path_tb.Size = new System.Drawing.Size(132, 20);
-            this.d_path_tb.TabIndex = 2;
-            this.d_path_tb.Text = "Wybierz plik";
+            this.d_src_tb.Location = new System.Drawing.Point(135, 33);
+            this.d_src_tb.Name = "d_src_tb";
+            this.d_src_tb.Size = new System.Drawing.Size(132, 20);
+            this.d_src_tb.TabIndex = 2;
+            this.d_src_tb.Text = "Wybierz plik";
             // 
-            // d_path_button
+            // d_src_button
             // 
-            this.d_path_button.Location = new System.Drawing.Point(261, 43);
-            this.d_path_button.Name = "d_path_button";
-            this.d_path_button.Size = new System.Drawing.Size(75, 23);
-            this.d_path_button.TabIndex = 4;
-            this.d_path_button.Text = "Wybierz plik";
-            this.d_path_button.UseVisualStyleBackColor = true;
+            this.d_src_button.Location = new System.Drawing.Point(315, 31);
+            this.d_src_button.Name = "d_src_button";
+            this.d_src_button.Size = new System.Drawing.Size(75, 23);
+            this.d_src_button.TabIndex = 4;
+            this.d_src_button.Text = "Wybierz plik";
+            this.d_src_button.UseVisualStyleBackColor = true;
             // 
             // decode_button
             // 
@@ -458,6 +496,32 @@
             this.dodajOdbiorceToolStripMenuItem.Name = "dodajOdbiorceToolStripMenuItem";
             this.dodajOdbiorceToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.dodajOdbiorceToolStripMenuItem.Text = "Dodaj Odbiorce";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(29, 77);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(74, 13);
+            this.label7.TabIndex = 5;
+            this.label7.Text = "Plik wyjsciowy";
+            // 
+            // d_dst_tb
+            // 
+            this.d_dst_tb.Location = new System.Drawing.Point(135, 74);
+            this.d_dst_tb.Name = "d_dst_tb";
+            this.d_dst_tb.Size = new System.Drawing.Size(132, 20);
+            this.d_dst_tb.TabIndex = 6;
+            this.d_dst_tb.Text = "Wybierz plik";
+            // 
+            // d_dst_button
+            // 
+            this.d_dst_button.Location = new System.Drawing.Point(315, 72);
+            this.d_dst_button.Name = "d_dst_button";
+            this.d_dst_button.Size = new System.Drawing.Size(75, 23);
+            this.d_dst_button.TabIndex = 7;
+            this.d_dst_button.Text = "Wybierz plik";
+            this.d_dst_button.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -506,22 +570,22 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox path_tb;
+        private System.Windows.Forms.TextBox e_src_tb;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox e_length_subbox_cb;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label e_status_lbl;
         private System.Windows.Forms.Button encode_button;
         private System.Windows.Forms.Button decode_button;
-        private System.Windows.Forms.Button d_path_button;
+        private System.Windows.Forms.Button d_src_button;
         private System.Windows.Forms.TextBox d_password_tb;
-        private System.Windows.Forms.TextBox d_path_tb;
+        private System.Windows.Forms.TextBox d_src_tb;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button e_path_button;
+        private System.Windows.Forms.Button e_src_button;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.ListBox d_users_list;
         private System.Windows.Forms.GroupBox groupBox5;
@@ -535,6 +599,12 @@
         private System.Windows.Forms.MenuStrip main_menu;
         private System.Windows.Forms.ToolStripMenuItem odbiorcyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dodajOdbiorceToolStripMenuItem;
+        private System.Windows.Forms.Button e_dst_button;
+        private System.Windows.Forms.TextBox e_dst_tb;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button d_dst_button;
+        private System.Windows.Forms.TextBox d_dst_tb;
+        private System.Windows.Forms.Label label7;
     }
 }
 
