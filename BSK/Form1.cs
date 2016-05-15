@@ -25,7 +25,8 @@ namespace BSK
         public List<String> users_to_encode = new List<String>();
         public List<String> encrypted_keys = new List<String>();
         public List<String> users_to_decode = new List<String>();
-        DirectoryInfo public_keys_path = new DirectoryInfo(@"C:\Serpent\BSK\bin\Debug\Users\PublicKeys\");
+        DirectoryInfo public_keys_path = new DirectoryInfo(@"C:\Serpent\BSK\bin\Debug\Users\PublicKeys\"); //pamietaj by zmienic na
+        DirectoryInfo private_keys_path = new DirectoryInfo(@"C:\Serpent\BSK\bin\Debug\Users\PrivateKeys\");//jakos defaultowo
         bool activated = false;
 
         public Form1()
@@ -34,13 +35,21 @@ namespace BSK
             load_comboboxes();
             load_users();
             load_users_to_list();
+
+            //ENCODE
             encode_button.Click += encode_button_click;
             e_mode_cb.SelectionChangeCommitted += e_change_restriction_mode;
-            e_src_button.Click += e_path_button_click;
-            e_dst_button.Click += e_path_button_click2;
+            e_src_button.Click += e_src_button_click;
+            e_dst_button.Click += e_dst_button_click;
             e_add_user.Click += add_authorized_user;
             e_delete_user.Click += delete_user;
             dodajOdbiorceToolStripMenuItem.Click += add_user_from_menu;
+
+            //DECODE
+            decode_button.Click += decode_button_click;
+            d_src_button.Click += d_src_button_click;
+            d_dst_button.Click += d_dst_button_click;
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -127,7 +136,7 @@ namespace BSK
             e_users_list.Items.Remove(selected_user);
         }
 
-        private void e_path_button_click(object sender, EventArgs e)
+        private void e_src_button_click(object sender, EventArgs e)
         {
             
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -145,7 +154,7 @@ namespace BSK
 
         }
 
-        private void e_path_button_click2(object sender, EventArgs e)
+        private void e_dst_button_click(object sender, EventArgs e)
         {
 
             SaveFileDialog openFileDialog = new SaveFileDialog();
@@ -157,16 +166,6 @@ namespace BSK
             {
                 e_dst_tb.Text = openFileDialog.FileName;
             }
-
-            //if (DialogResult.OK == openFileDialog)
-            //{
-            //directoryPath = Path.GetFullPath(openFileDialog.FileName);
-            //directoryPath = Path.GetDirectoryName(openFileDialog.FileName);
-
-            //textBox_dest.Text = openFileDialog.FileName;
-
-            //}
-
         }
 
         private void e_change_restriction_mode(object sender, EventArgs e)
@@ -211,16 +210,12 @@ namespace BSK
             if (correct == false)
                 MessageBox.Show("Uzupelnij ustawienia!");
             else
-                encrypt(true);
+                encrypt();
         }
 
-        private void encrypt(bool encrypt)
+        private void encrypt()
         {
-            String path = Path.GetDirectoryName(object_to_encode.path);
-            String name_of_file = Path.GetFileName(object_to_encode.path);
-            String[] words = name_of_file.Split('.');
-            name_of_file = "Zaszyfrowany" + words[0];
-            path += @"\\" + name_of_file;            
+            String path = Path.GetDirectoryName(object_to_encode.path);         
 
             if (!File.Exists(object_to_encode.path))
             {
@@ -228,20 +223,15 @@ namespace BSK
                 return;
             }
 
-
             block_controllers();
 
             IAlgorithm alg;
             e_status_lbl.Text = "Szyfrowanie";
 
-            //if (encrypt)
-            //{
             alg = encryptFile(object_to_encode.path, e_dst_tb.Text, object_to_encode.mode, object_to_encode.subbox_lenght, object_to_encode.key_length, object_to_encode.password);
-            //}
 
             Int64 length = alg.getSrcLength();
             Int64 step = System.Convert.ToInt64(Math.Ceiling(length / (double)100));
-            Int64 countBytes = 0;
             Int64 bytes = 1;
 
             while (bytes > 0)
@@ -275,6 +265,184 @@ namespace BSK
             e_src_button.Enabled = true;
         }
 
+        private void d_src_button_click(object sender, EventArgs e)
+        {
+
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.FilterIndex = 1;
+            openFileDialog.Multiselect = false;
+
+            String directoryPath;
+
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                directoryPath = Path.GetFullPath(openFileDialog.FileName);
+                object_to_encode.path = directoryPath;
+                d_src_tb.Text = directoryPath;
+            }
+
+        }
+
+        private void d_dst_button_click(object sender, EventArgs e)
+        {
+
+            SaveFileDialog openFileDialog = new SaveFileDialog();
+
+            dynamic directoryPath;
+
+            DialogResult r = openFileDialog.ShowDialog();
+            if (DialogResult.OK == r)            
+                d_dst_tb.Text = openFileDialog.FileName;
+            
+        }
+
+        private void decode_button_click(object sender, EventArgs e)
+        {
+            //string src = d_src_tb.Text;
+            //string dst = d_dst_tb.Text;
+            String password = d_password_tb.Text;
+            String selected_user = d_users_list.SelectedItem.ToString();
+            String private_key;
+
+            IAlgorithm alg = decryptKey(private_keys_path.ToString() + selected_user, password);
+
+            Int64 length = alg.getSrcLength();
+            Int64 step = System.Convert.ToInt64(Math.Ceiling(length / (double)100));
+            Int64 bytes = 1;
+
+            d_status_lbl.Text = "Trwa przetwarzanie klucza prywatnego";
+            while (bytes > 0)
+            {
+                // "unit work" szyfrowanie fragmentu pliku
+                bytes = alg.encrypt(step);
+            }
+            alg.Dispose();
+
+            d_status_lbl.Text = "Zaczeto odszyfrowanie";
+            //szyfrowanie######################################## do oddzielnej funkcji decode
+            private_key = get_private_key(selected_user);
+            alg = decryptFile(d_src_tb.Text, d_dst_tb.Text, password, private_key, selected_user);
+
+            length = alg.getSrcLength();
+            step = System.Convert.ToInt64(Math.Ceiling(length / (double)100));
+            bytes = 1;
+
+            while (bytes > 0)
+            {
+                // "unit work" szyfrowanie fragmentu pliku
+                bytes = alg.encrypt(step);
+            }
+            alg.Dispose();
+
+            d_status_lbl.Text = "Odszyfrowanie zakonczone";
+        } 
+
+        private String get_private_key(String selected_user)
+        {
+            String key;
+            using (StreamReader sr = new StreamReader(private_keys_path.ToString() + selected_user + "tmp", true))
+            {
+                key = sr.ReadLine();
+            }
+            File.Delete(private_keys_path.ToString() + selected_user + "tmp");
+            return key;
+        }
+
+        private IAlgorithm decryptKey(String src, String password)
+        {
+            IAlgorithm alg = null;
+            String key;
+
+            var SHA = SHA256.Create();
+            byte[] hashed_password = SHA.ComputeHash(GetBytes(password)); //iv
+            KeyParameter session_key = new KeyParameter(hashed_password); //skey
+            String password_to_use = Convert.ToBase64String(hashed_password); //password
+
+            alg = new Serpent(session_key, hashed_password, false);
+            alg.init(src, src + "tmp", "ECB", 128, 0, 0);
+
+            return alg;
+        }
+
+        private IAlgorithm decryptFile(String src, String dst, String password, String private_key, String selected_user)
+        {
+            // wykonanie algorytmu
+            //  utworzenie obiektu klasy algorithm (IAlgorithm)
+            //  wywołanie metody encrypt lub decrypt z odpowiednimi parametrami
+            //  w tym obsługa paska postepu i przerwania operacji
+            IAlgorithm alg;
+
+            // wczytanie nagłówka
+            String xmlHeader = "";
+            using (StreamReader sr = new StreamReader(src))
+            {
+                String line;
+                while (sr.Peek() >= 0)
+                {
+                    line = sr.ReadLine();
+                    xmlHeader += line + "\r\n";
+
+                    if (line.Equals("</EncryptedFileHeader>"))
+                    {
+                        break;
+                    }
+                }
+            }
+
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(xmlHeader);
+
+            int headerOffset = xmlHeader.Length;
+
+            // wyświetlenie nagłówka w GUI
+            //fileHeader.Text = xmlHeader;
+
+            // odczytanie parametrów z nagłówka
+            XmlNode node = doc.DocumentElement.SelectSingleNode("/EncryptedFileHeader/KeySize");
+            var keySize = Convert.ToInt32(node.InnerText);
+            keySize = keySize >> 3;
+
+            XmlNodeList xnList = doc.SelectNodes("/EncryptedFileHeader/Users/User");
+            byte[] encryptedKey = null;
+
+            foreach (XmlNode user in xnList)
+            {
+                if (user["Name"].InnerText == selected_user)
+                {
+                    encryptedKey = Convert.FromBase64String(user["EncryptedKey"].InnerText);
+                }
+            }        
+            
+
+            //node = doc.DocumentElement.SelectSingleNode("/EncryptedFileHeader/Users/User/"+ selected_user + "/EncryptedKey");
+            //byte[] encryptedKey = Convert.FromBase64String(node.InnerText);
+
+            // odszyfrowanie klucza sesyjnego kluczem prywatnym uzytnika
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            rsa.FromXmlString(private_key);
+            
+            var sessionKey = rsa.Decrypt(encryptedKey, false);
+
+            KeyParameter session_key_kp = new KeyParameter(sessionKey);
+
+            //*************************************************************************
+
+            node = doc.DocumentElement.SelectSingleNode("/EncryptedFileHeader/IV");
+            byte[] iv = Convert.FromBase64String(node.InnerText);
+
+            node = doc.DocumentElement.SelectSingleNode("/EncryptedFileHeader/SegmentSize");
+            var segment = Convert.ToInt32(node.InnerText);
+
+            node = doc.DocumentElement.SelectSingleNode("/EncryptedFileHeader/CipherMode");
+            var cipherMode = node.InnerText;
+
+            // odszyfrowywanie
+            alg = new Serpent(session_key_kp, iv, false);
+            alg.init(src, dst, cipherMode, segment, headerOffset, 0);
+
+            return alg;
+        }
+
         private IAlgorithm encryptFile(String src, String dst, String cipher_mode, int segment, int session_key_size, String password) // dodac uzytnikow
         {
             // wykonanie algorytmu
@@ -285,6 +453,7 @@ namespace BSK
             //Dodaje tutaj naglowek userow, pomysl nad rozbiciem tego na funkcje############################################################
             
             var session_key = Serpent.generateKey(session_key_size);
+
 
             var iv = Serpent.generateIV();
             RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();   
@@ -301,16 +470,8 @@ namespace BSK
                     var encrypted_key = rsa.Encrypt(session_key.GetKey(), false);
                     
                     encrypted_keys.Add(Convert.ToBase64String(encrypted_key));
-                }
-                
-                //using (BinaryReader br = new BinaryReader(new FileStream(public_keys_path.ToString() + user, FileMode.Open, FileAccess.Read)))
-                //{
-                //    long num_of_bytes = new FileInfo(public_keys_path.ToString() + user).Length;
-                //    int num = (int)num_of_bytes;
-                //    sessionKeyAlg = getSessionKeyAlg(true, br.ReadBytes(num).ToString());
-                //    encryptedKey = sessionKeyAlg.encryptInMemory(key.GetKey());
-                //    encrypted_keys.Add(Convert.ToBase64String(encryptedKey));
-                //}
+                    //MessageBox.Show(Convert.ToBase64String(encrypted_key)); //tutaj messagebox
+                }               
             }            
 
             XElement usersXML = new XElement("Users");

@@ -36,7 +36,7 @@ namespace BSK
         private Button cancel_bt;
         private String private_keys_path = @"C:\Serpent\BSK\bin\Debug\Users\PrivateKeys\";
         private String public_keys_path = @"C:\Serpent\BSK\bin\Debug\Users\PublicKeys\";
-        private const int LENGHT_OF_KEY = 1024;
+        private const int LENGHT_OF_KEY = 2048;
 
         private void InitializeComponent()
         {
@@ -128,7 +128,7 @@ namespace BSK
         private void add_user(object sender, EventArgs e)
         {
             String name = user_name.Text;
-            string password = user_name.Text;          
+            string password = user_password.Text;          
 
             if (password == "" || name == "")
                 MessageBox.Show("Wypelnij pole haslo");
@@ -208,5 +208,6 @@ namespace BSK
 
             return alg;
         }
+                
     }
 }
