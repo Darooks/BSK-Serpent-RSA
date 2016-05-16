@@ -38,7 +38,9 @@ namespace BSK
         private String public_keys_path = @"C:\Serpent\BSK\bin\Debug\Users\PublicKeys\";
         private Label label3;
         private TextBox user_password_repeat;
-        private const int LENGHT_OF_KEY = 2048;
+        private Label label4;
+        private ComboBox key_length_cb;
+        private bool activated = false;
 
         private void InitializeComponent()
         {
@@ -50,6 +52,8 @@ namespace BSK
             this.cancel_bt = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.user_password_repeat = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.key_length_cb = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // label1
@@ -72,7 +76,7 @@ namespace BSK
             // 
             // add_user_bt
             // 
-            this.add_user_bt.Location = new System.Drawing.Point(55, 140);
+            this.add_user_bt.Location = new System.Drawing.Point(55, 161);
             this.add_user_bt.Name = "add_user_bt";
             this.add_user_bt.Size = new System.Drawing.Size(75, 23);
             this.add_user_bt.TabIndex = 3;
@@ -96,7 +100,7 @@ namespace BSK
             // 
             // cancel_bt
             // 
-            this.cancel_bt.Location = new System.Drawing.Point(193, 140);
+            this.cancel_bt.Location = new System.Drawing.Point(193, 161);
             this.cancel_bt.Name = "cancel_bt";
             this.cancel_bt.Size = new System.Drawing.Size(75, 23);
             this.cancel_bt.TabIndex = 7;
@@ -120,9 +124,33 @@ namespace BSK
             this.user_password_repeat.Size = new System.Drawing.Size(100, 20);
             this.user_password_repeat.TabIndex = 9;
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(25, 120);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(83, 13);
+            this.label4.TabIndex = 10;
+            this.label4.Text = "Dlugosc klucza:";
+            // 
+            // key_length_cb
+            // 
+            this.key_length_cb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.key_length_cb.FormattingEnabled = true;
+            this.key_length_cb.Items.AddRange(new object[] {
+            "2048 bit",
+            "3072 bit",
+            "4096 bit"});
+            this.key_length_cb.Location = new System.Drawing.Point(168, 117);
+            this.key_length_cb.Name = "key_length_cb";
+            this.key_length_cb.Size = new System.Drawing.Size(100, 21);
+            this.key_length_cb.TabIndex = 11;
+            // 
             // AddUserForm
             // 
             this.ClientSize = new System.Drawing.Size(336, 196);
+            this.Controls.Add(this.key_length_cb);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.user_password_repeat);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.cancel_bt);
@@ -140,8 +168,18 @@ namespace BSK
         public AddUserForm()
         {
             InitializeComponent();
+            load_combobox();
             cancel_bt.Click += cancel;
             add_user_bt.Click += add_user;
+        }
+
+        private void load_combobox()
+        {
+            if (activated == false)
+            {
+                key_length_cb.SelectedIndex = 0;
+                activated = true;
+            }
         }
 
         private void cancel(object sender, EventArgs e)
@@ -160,7 +198,7 @@ namespace BSK
                 MessageBox.Show("Zle przepisales haslo. Powtorz jeszcze raz!");            
             else
             {
-                create_user(name, password);                
+                create_user(name, password);
                 this.Close();
             }
         }
@@ -168,7 +206,10 @@ namespace BSK
         //TODO Zaszyfrowac klucz publiczny i prywatny za pomoca hasla!!!
         private void create_user(String name, String password)
         {
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(LENGHT_OF_KEY);
+            String key_length_str = key_length_cb.Text;
+            int key_length = Int32.Parse(key_length_str.Substring(0, key_length_str.IndexOf(" ")));
+
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(key_length);
             var private_key = rsa.ToXmlString(true);
             var public_key = rsa.ToXmlString(false); // RSA.FromXmlString(publicKey);
 

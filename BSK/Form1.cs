@@ -212,6 +212,7 @@ namespace BSK
             else
             {                
                 encrypt();
+                MessageBox.Show("Szyfrowanie zakonczone sukcesem!");
                 Application.Restart();
             }
         }
@@ -254,6 +255,7 @@ namespace BSK
             }
             alg.Dispose();
 
+            MessageBox.Show("Odszyfrowanie zakonczone sukcesem!");
             d_status_lbl.Text = "Odszyfrowanie zakonczone";
         } 
 
