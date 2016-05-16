@@ -62,6 +62,9 @@
             this.d_users_list = new System.Windows.Forms.ListBox();
             this.d_password_tb = new System.Windows.Forms.TextBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.d_dst_button = new System.Windows.Forms.Button();
+            this.d_dst_tb = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.d_src_tb = new System.Windows.Forms.TextBox();
             this.d_src_button = new System.Windows.Forms.Button();
@@ -70,9 +73,6 @@
             this.odbiorcyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dodajOdbiorceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.label7 = new System.Windows.Forms.Label();
-            this.d_dst_tb = new System.Windows.Forms.TextBox();
-            this.d_dst_button = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.SzyfrowanieTab.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -419,6 +419,7 @@
             // 
             this.d_password_tb.Location = new System.Drawing.Point(57, 28);
             this.d_password_tb.Name = "d_password_tb";
+            this.d_password_tb.PasswordChar = '*';
             this.d_password_tb.Size = new System.Drawing.Size(132, 20);
             this.d_password_tb.TabIndex = 3;
             // 
@@ -436,6 +437,32 @@
             this.groupBox4.TabIndex = 6;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Plik wejsciowy";
+            // 
+            // d_dst_button
+            // 
+            this.d_dst_button.Location = new System.Drawing.Point(315, 72);
+            this.d_dst_button.Name = "d_dst_button";
+            this.d_dst_button.Size = new System.Drawing.Size(75, 23);
+            this.d_dst_button.TabIndex = 7;
+            this.d_dst_button.Text = "Wybierz plik";
+            this.d_dst_button.UseVisualStyleBackColor = true;
+            // 
+            // d_dst_tb
+            // 
+            this.d_dst_tb.Location = new System.Drawing.Point(135, 74);
+            this.d_dst_tb.Name = "d_dst_tb";
+            this.d_dst_tb.Size = new System.Drawing.Size(132, 20);
+            this.d_dst_tb.TabIndex = 6;
+            this.d_dst_tb.Text = "Wybierz plik";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(29, 77);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(74, 13);
+            this.label7.TabIndex = 5;
+            this.label7.Text = "Plik wyjsciowy";
             // 
             // label8
             // 
@@ -496,32 +523,6 @@
             this.dodajOdbiorceToolStripMenuItem.Name = "dodajOdbiorceToolStripMenuItem";
             this.dodajOdbiorceToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.dodajOdbiorceToolStripMenuItem.Text = "Dodaj Odbiorce";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(29, 77);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(74, 13);
-            this.label7.TabIndex = 5;
-            this.label7.Text = "Plik wyjsciowy";
-            // 
-            // d_dst_tb
-            // 
-            this.d_dst_tb.Location = new System.Drawing.Point(135, 74);
-            this.d_dst_tb.Name = "d_dst_tb";
-            this.d_dst_tb.Size = new System.Drawing.Size(132, 20);
-            this.d_dst_tb.TabIndex = 6;
-            this.d_dst_tb.Text = "Wybierz plik";
-            // 
-            // d_dst_button
-            // 
-            this.d_dst_button.Location = new System.Drawing.Point(315, 72);
-            this.d_dst_button.Name = "d_dst_button";
-            this.d_dst_button.Size = new System.Drawing.Size(75, 23);
-            this.d_dst_button.TabIndex = 7;
-            this.d_dst_button.Text = "Wybierz plik";
-            this.d_dst_button.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 

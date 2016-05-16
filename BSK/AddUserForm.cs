@@ -36,6 +36,8 @@ namespace BSK
         private Button cancel_bt;
         private String private_keys_path = @"C:\Serpent\BSK\bin\Debug\Users\PrivateKeys\";
         private String public_keys_path = @"C:\Serpent\BSK\bin\Debug\Users\PublicKeys\";
+        private Label label3;
+        private TextBox user_password_repeat;
         private const int LENGHT_OF_KEY = 2048;
 
         private void InitializeComponent()
@@ -46,6 +48,8 @@ namespace BSK
             this.user_name = new System.Windows.Forms.TextBox();
             this.user_password = new System.Windows.Forms.TextBox();
             this.cancel_bt = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.user_password_repeat = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -68,7 +72,7 @@ namespace BSK
             // 
             // add_user_bt
             // 
-            this.add_user_bt.Location = new System.Drawing.Point(55, 108);
+            this.add_user_bt.Location = new System.Drawing.Point(55, 140);
             this.add_user_bt.Name = "add_user_bt";
             this.add_user_bt.Size = new System.Drawing.Size(75, 23);
             this.add_user_bt.TabIndex = 3;
@@ -86,21 +90,41 @@ namespace BSK
             // 
             this.user_password.Location = new System.Drawing.Point(168, 62);
             this.user_password.Name = "user_password";
+            this.user_password.PasswordChar = '*';
             this.user_password.Size = new System.Drawing.Size(100, 20);
             this.user_password.TabIndex = 5;
             // 
             // cancel_bt
             // 
-            this.cancel_bt.Location = new System.Drawing.Point(193, 108);
+            this.cancel_bt.Location = new System.Drawing.Point(193, 140);
             this.cancel_bt.Name = "cancel_bt";
             this.cancel_bt.Size = new System.Drawing.Size(75, 23);
             this.cancel_bt.TabIndex = 7;
             this.cancel_bt.Text = "Anuluj";
             this.cancel_bt.UseVisualStyleBackColor = true;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(25, 91);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(76, 13);
+            this.label3.TabIndex = 8;
+            this.label3.Text = "Powtorz haslo:";
+            // 
+            // user_password_repeat
+            // 
+            this.user_password_repeat.Location = new System.Drawing.Point(168, 88);
+            this.user_password_repeat.Name = "user_password_repeat";
+            this.user_password_repeat.PasswordChar = '*';
+            this.user_password_repeat.Size = new System.Drawing.Size(100, 20);
+            this.user_password_repeat.TabIndex = 9;
+            // 
             // AddUserForm
             // 
-            this.ClientSize = new System.Drawing.Size(336, 160);
+            this.ClientSize = new System.Drawing.Size(336, 196);
+            this.Controls.Add(this.user_password_repeat);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.cancel_bt);
             this.Controls.Add(this.user_password);
             this.Controls.Add(this.user_name);
@@ -132,6 +156,8 @@ namespace BSK
 
             if (password == "" || name == "")
                 MessageBox.Show("Wypelnij pole haslo");
+            else if (user_password.Text != user_password_repeat.Text)            
+                MessageBox.Show("Zle przepisales haslo. Powtorz jeszcze raz!");            
             else
             {
                 create_user(name, password);                

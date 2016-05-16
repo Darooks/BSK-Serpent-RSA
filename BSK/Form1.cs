@@ -210,8 +210,52 @@ namespace BSK
             if (correct == false)
                 MessageBox.Show("Uzupelnij ustawienia!");
             else
+            {                
                 encrypt();
+                Application.Restart();
+            }
         }
+
+        private void decode_button_click(object sender, EventArgs e)
+        {
+            //string src = d_src_tb.Text;
+            //string dst = d_dst_tb.Text;
+            String password = d_password_tb.Text;
+            String selected_user = d_users_list.SelectedItem.ToString();
+            String private_key;
+
+            IAlgorithm alg = decryptKey(private_keys_path.ToString() + selected_user, password);
+
+            Int64 length = alg.getSrcLength();
+            Int64 step = System.Convert.ToInt64(Math.Ceiling(length / (double)100));
+            Int64 bytes = 1;
+
+            d_status_lbl.Text = "Trwa przetwarzanie klucza prywatnego";
+            while (bytes > 0)
+            {
+                // "unit work" szyfrowanie fragmentu pliku
+                bytes = alg.encrypt(step);
+            }
+            alg.Dispose();
+
+            d_status_lbl.Text = "Zaczeto odszyfrowanie";
+            //szyfrowanie######################################## do oddzielnej funkcji decode
+            private_key = get_private_key(selected_user);
+            alg = decryptFile(d_src_tb.Text, d_dst_tb.Text, password, private_key, selected_user);
+
+            length = alg.getSrcLength();
+            step = System.Convert.ToInt64(Math.Ceiling(length / (double)100));
+            bytes = 1;
+
+            while (bytes > 0)
+            {
+                // "unit work" szyfrowanie fragmentu pliku
+                bytes = alg.encrypt(step);
+            }
+            alg.Dispose();
+
+            d_status_lbl.Text = "Odszyfrowanie zakonczone";
+        } 
 
         private void encrypt()
         {
@@ -228,7 +272,7 @@ namespace BSK
             IAlgorithm alg;
             e_status_lbl.Text = "Szyfrowanie";
 
-            alg = encryptFile(object_to_encode.path, e_dst_tb.Text, object_to_encode.mode, object_to_encode.subbox_lenght, object_to_encode.key_length, object_to_encode.password);
+            alg = encryptFile(object_to_encode.path, e_dst_tb.Text, object_to_encode.mode, object_to_encode.subbox_lenght, object_to_encode.key_length, "");
 
             Int64 length = alg.getSrcLength();
             Int64 step = System.Convert.ToInt64(Math.Ceiling(length / (double)100));
@@ -243,6 +287,7 @@ namespace BSK
 
             e_status_lbl.Text = "Szyfrowanie zakonczone!!!";
             restore_controllers();
+            alg = null;
         }
 
         private void block_controllers()
@@ -295,47 +340,6 @@ namespace BSK
                 d_dst_tb.Text = openFileDialog.FileName;
             
         }
-
-        private void decode_button_click(object sender, EventArgs e)
-        {
-            //string src = d_src_tb.Text;
-            //string dst = d_dst_tb.Text;
-            String password = d_password_tb.Text;
-            String selected_user = d_users_list.SelectedItem.ToString();
-            String private_key;
-
-            IAlgorithm alg = decryptKey(private_keys_path.ToString() + selected_user, password);
-
-            Int64 length = alg.getSrcLength();
-            Int64 step = System.Convert.ToInt64(Math.Ceiling(length / (double)100));
-            Int64 bytes = 1;
-
-            d_status_lbl.Text = "Trwa przetwarzanie klucza prywatnego";
-            while (bytes > 0)
-            {
-                // "unit work" szyfrowanie fragmentu pliku
-                bytes = alg.encrypt(step);
-            }
-            alg.Dispose();
-
-            d_status_lbl.Text = "Zaczeto odszyfrowanie";
-            //szyfrowanie######################################## do oddzielnej funkcji decode
-            private_key = get_private_key(selected_user);
-            alg = decryptFile(d_src_tb.Text, d_dst_tb.Text, password, private_key, selected_user);
-
-            length = alg.getSrcLength();
-            step = System.Convert.ToInt64(Math.Ceiling(length / (double)100));
-            bytes = 1;
-
-            while (bytes > 0)
-            {
-                // "unit work" szyfrowanie fragmentu pliku
-                bytes = alg.encrypt(step);
-            }
-            alg.Dispose();
-
-            d_status_lbl.Text = "Odszyfrowanie zakonczone";
-        } 
 
         private String get_private_key(String selected_user)
         {

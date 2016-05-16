@@ -23,5 +23,7 @@ namespace BSK
             mode = "";
             password = "asd";
         }
+
+        ~EncodingProperties() { }
     }
 }
