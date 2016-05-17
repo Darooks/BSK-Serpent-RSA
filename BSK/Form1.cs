@@ -28,6 +28,7 @@ namespace BSK
         DirectoryInfo public_keys_path = new DirectoryInfo(@"C:\Serpent\BSK\bin\Debug\Users\PublicKeys\"); //pamietaj by zmienic na
         DirectoryInfo private_keys_path = new DirectoryInfo(@"C:\Serpent\BSK\bin\Debug\Users\PrivateKeys\");//jakos defaultowo
         bool activated = false;
+        String d_src = null;
 
         public Form1()
         {
@@ -83,14 +84,14 @@ namespace BSK
                     if (!users_to_encode.Contains(file.Name.ToString()))
                     {
                         users_to_encode.Add(file.Name.ToString());
-                        users_to_decode.Add(file.Name.ToString());
+                        //users_to_decode.Add(file.Name.ToString());
                     }
                 }
             }            
         }
 
         private void load_users_to_list()
-        {
+        {            
             foreach (var user in users_to_encode)
                 if (!e_users_list.Items.Contains(user))
                     e_users_list.Items.Add(user);
@@ -314,7 +315,8 @@ namespace BSK
 
         private void d_src_button_click(object sender, EventArgs e)
         {
-
+            d_users_list.Items.Clear();
+            users_to_decode.Clear();
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.FilterIndex = 1;
             openFileDialog.Multiselect = false;
@@ -323,10 +325,37 @@ namespace BSK
 
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
+                
                 directoryPath = Path.GetFullPath(openFileDialog.FileName);
                 object_to_encode.path = directoryPath;
                 d_src_tb.Text = directoryPath;
-            }
+                d_src = directoryPath;
+
+                String xmlHeader = "";
+                using (StreamReader sr = new StreamReader(d_src))
+                {
+                    String line;
+                    while (sr.Peek() >= 0)
+                    {
+                        line = sr.ReadLine();
+                        xmlHeader += line + "\r\n";
+
+                        if (line.Equals("</EncryptedFileHeader>"))                        
+                            break;
+                        
+                    }
+                }
+                
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(xmlHeader);
+                XmlNodeList xnList = doc.SelectNodes("/EncryptedFileHeader/Users/User");
+
+                foreach (XmlNode user in xnList)
+                    users_to_decode.Add(user["Name"].InnerText);
+                load_users_to_list();
+                    //if (!d_users_list.Items.Contains(user))
+                    //    d_users_list.Items.Add(user);
+                }
 
         }
 
@@ -388,10 +417,8 @@ namespace BSK
                     line = sr.ReadLine();
                     xmlHeader += line + "\r\n";
 
-                    if (line.Equals("</EncryptedFileHeader>"))
-                    {
-                        break;
-                    }
+                    if (line.Equals("</EncryptedFileHeader>"))                    
+                        break;                    
                 }
             }
 
@@ -410,15 +437,24 @@ namespace BSK
 
             XmlNodeList xnList = doc.SelectNodes("/EncryptedFileHeader/Users/User");
             byte[] encryptedKey = null;
+            bool znaleziony = false;
 
             foreach (XmlNode user in xnList)
             {
                 if (user["Name"].InnerText == selected_user)
                 {
                     encryptedKey = Convert.FromBase64String(user["EncryptedKey"].InnerText);
+                    znaleziony = true;
+                    break;
                 }
-            }        
-            
+                else
+                    znaleziony = false;
+            }
+            if (znaleziony == false)
+            {
+                MessageBox.Show("Wybrany uzytkownik nie jest na liscie odbiorcow tego pliku");
+                Application.Restart();
+            }
 
             //node = doc.DocumentElement.SelectSingleNode("/EncryptedFileHeader/Users/User/"+ selected_user + "/EncryptedKey");
             //byte[] encryptedKey = Convert.FromBase64String(node.InnerText);
