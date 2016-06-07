@@ -25,8 +25,9 @@ namespace BSK
         public List<String> users_to_encode = new List<String>();
         public List<String> encrypted_keys = new List<String>();
         public List<String> users_to_decode = new List<String>();
-        DirectoryInfo public_keys_path = new DirectoryInfo(@"C:\Serpent\BSK\bin\Debug\Users\PublicKeys\"); //pamietaj by zmienic na
-        DirectoryInfo private_keys_path = new DirectoryInfo(@"C:\Serpent\BSK\bin\Debug\Users\PrivateKeys\");//jakos defaultowo
+        public static String currentDir = Directory.GetCurrentDirectory();
+        DirectoryInfo public_keys_path = new DirectoryInfo(currentDir + @"\Users\PublicKeys\"); //pamietaj by zmienic na
+        DirectoryInfo private_keys_path = new DirectoryInfo(currentDir + @"\Users\PrivateKeys\");//jakos defaultowo
         bool activated = false;
         String d_src = null;
 
@@ -223,41 +224,47 @@ namespace BSK
             //string src = d_src_tb.Text;
             //string dst = d_dst_tb.Text;
             String password = d_password_tb.Text;
-            String selected_user = d_users_list.SelectedItem.ToString();
             String private_key;
-
-            IAlgorithm alg = decryptKey(private_keys_path.ToString() + selected_user, password);
-
-            Int64 length = alg.getSrcLength();
-            Int64 step = System.Convert.ToInt64(Math.Ceiling(length / (double)100));
-            Int64 bytes = 1;
-
-            d_status_lbl.Text = "Trwa przetwarzanie klucza prywatnego";
-            while (bytes > 0)
+            if (d_users_list.SelectedItem != null && d_src_tb.Text != "Wybierz plik" && d_dst_tb.Text != "Wybierz plik")
             {
-                // "unit work" szyfrowanie fragmentu pliku
-                bytes = alg.encrypt(step);
+                String selected_user = d_users_list.SelectedItem.ToString();
+
+
+                IAlgorithm alg = decryptKey(private_keys_path.ToString() + selected_user, password);
+
+                Int64 length = alg.getSrcLength();
+                Int64 step = System.Convert.ToInt64(Math.Ceiling(length / (double)100));
+                Int64 bytes = 1;
+
+                d_status_lbl.Text = "Trwa przetwarzanie klucza prywatnego";
+                while (bytes > 0)
+                {
+                    // "unit work" szyfrowanie fragmentu pliku
+                    bytes = alg.encrypt(step);
+                }
+                alg.Dispose();
+
+                d_status_lbl.Text = "Zaczeto odszyfrowanie";
+                //szyfrowanie######################################## do oddzielnej funkcji decode
+                private_key = get_private_key(selected_user);
+                alg = decryptFile(d_src_tb.Text, d_dst_tb.Text, password, private_key, selected_user);
+
+                length = alg.getSrcLength();
+                step = System.Convert.ToInt64(Math.Ceiling(length / (double)100));
+                bytes = 1;
+
+                while (bytes > 0)
+                {
+                    // "unit work" szyfrowanie fragmentu pliku
+                    bytes = alg.encrypt(step);
+                }
+                alg.Dispose();
+
+                MessageBox.Show("Odszyfrowanie zakonczone sukcesem!");
+                d_status_lbl.Text = "Odszyfrowanie zakonczone";
             }
-            alg.Dispose();
-
-            d_status_lbl.Text = "Zaczeto odszyfrowanie";
-            //szyfrowanie######################################## do oddzielnej funkcji decode
-            private_key = get_private_key(selected_user);
-            alg = decryptFile(d_src_tb.Text, d_dst_tb.Text, password, private_key, selected_user);
-
-            length = alg.getSrcLength();
-            step = System.Convert.ToInt64(Math.Ceiling(length / (double)100));
-            bytes = 1;
-
-            while (bytes > 0)
-            {
-                // "unit work" szyfrowanie fragmentu pliku
-                bytes = alg.encrypt(step);
-            }
-            alg.Dispose();
-
-            MessageBox.Show("Odszyfrowanie zakonczone sukcesem!");
-            d_status_lbl.Text = "Odszyfrowanie zakonczone";
+            else
+                MessageBox.Show("Zaznacz plik lub wybierz uzytkownika!");
         } 
 
         private void encrypt()
@@ -458,19 +465,29 @@ namespace BSK
 
             //node = doc.DocumentElement.SelectSingleNode("/EncryptedFileHeader/Users/User/"+ selected_user + "/EncryptedKey");
             //byte[] encryptedKey = Convert.FromBase64String(node.InnerText);
-
+            byte[] sessionKey = null;
             // odszyfrowanie klucza sesyjnego kluczem prywatnym uzytnika
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            rsa.FromXmlString(private_key);
-            
-            var sessionKey = rsa.Decrypt(encryptedKey, false);
+            if (private_key.Length > 5)
+            {
+                if (private_key.Substring(1, 3) == "RSA")
+                {
+                    RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+                    rsa.FromXmlString(private_key);            
+                    sessionKey = rsa.Decrypt(encryptedKey, false);
+                }
+            }
 
-            KeyParameter session_key_kp = new KeyParameter(sessionKey);
+            KeyParameter session_key_kp;
+            if (sessionKey == null)            
+                session_key_kp = new KeyParameter(Serpent.generateIV());            
+            else
+                session_key_kp = new KeyParameter(sessionKey);
 
             //*************************************************************************
 
             node = doc.DocumentElement.SelectSingleNode("/EncryptedFileHeader/IV");
             byte[] iv = Convert.FromBase64String(node.InnerText);
+
 
             node = doc.DocumentElement.SelectSingleNode("/EncryptedFileHeader/SegmentSize");
             var segment = Convert.ToInt32(node.InnerText);

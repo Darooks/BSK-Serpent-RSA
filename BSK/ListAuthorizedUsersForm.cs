@@ -20,7 +20,8 @@ namespace BSK
         private Button add_user_bt;
         private Button cancel_bt;
         public String user;
-        DirectoryInfo public_keys_path = new DirectoryInfo(@"C:\Serpent\BSK\bin\Debug\Users\PublicKeys\");
+        public static String currentDir = Directory.GetCurrentDirectory();
+        DirectoryInfo public_keys_path = new DirectoryInfo(currentDir + @"\Users\PublicKeys\");
 
         public ListAuthorizedUsersForm(List<String> list_from_form)
         {

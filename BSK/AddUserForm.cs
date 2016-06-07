@@ -34,8 +34,9 @@ namespace BSK
         private TextBox user_name;
         private TextBox user_password;
         private Button cancel_bt;
-        private String private_keys_path = @"C:\Serpent\BSK\bin\Debug\Users\PrivateKeys\";
-        private String public_keys_path = @"C:\Serpent\BSK\bin\Debug\Users\PublicKeys\";
+        public static String currentDir = Directory.GetCurrentDirectory();
+        private String private_keys_path = currentDir + @"\Users\PrivateKeys\";
+        private String public_keys_path = currentDir + @"\Users\PublicKeys\";
         private Label label3;
         private TextBox user_password_repeat;
         private Label label4;
